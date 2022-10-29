@@ -2,7 +2,7 @@ screenWidth, screenHeight = love.graphics.getDimensions()
 
 racket = {}
 racket.x = 0
-racket.y = 0
+racket.y = 100
 racket.width = 20
 racket.height = 80
 
@@ -37,20 +37,28 @@ function love.update()
     ball.y = ball.y - ball.speed_y
     
   -- bounces of the ball on walls
+    if ball.x < 0 then
+      ball.speed_x = ball.speed_x * (-1)
+    end
+    
     if ball.x > (screenWidth - ball.width) then
       ball.speed_x = ball.speed_x * (-1) -- reverse the speed
     end
     
-    if ball.x < 0 then
-      ball.speed_x = ball.speed_x * (-1)
+    if ball.y < 0 then
+      ball.speed_y = ball.speed_y * (-1)
     end
     
     if ball.y > (screenHeight - ball.height) then
       ball.speed_y = ball.speed_y * (-1)
     end
     
-    if ball.y < 0 then
-      ball.speed_y = ball.speed_y * (-1)
+  -- ball / racket collision
+    if ball.x <= (racket.x + racket.width) then
+      if (ball.y + ball.height) >= racket.y and ball.y <= (racket.y + racket.height) then
+        ball.speed_x = ball.speed_x * (-1)
+        ball.x = racket.x + racket.width -- for more precision
+      end
     end
   
 end
