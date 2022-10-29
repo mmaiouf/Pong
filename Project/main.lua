@@ -1,4 +1,4 @@
-widthScreen, heightScreen = love.graphics.getDimensions()
+screenWidth, screenHeight = love.graphics.getDimensions()
 
 racket = {}
 racket.x = 0
@@ -7,8 +7,8 @@ racket.width = 20
 racket.height = 80
 
 ball = {}
-ball.x = widthScreen / 2
-ball.y = heightScreen / 2
+ball.x = screenWidth / 2
+ball.y = screenHeight / 2
 ball.width = 20
 ball.height = 20
 ball.speed_x = 2
@@ -24,7 +24,7 @@ end
 function love.update()
   
   -- controls management
-    if love.keyboard.isDown("down") and racket.y < (heightScreen - racket.height) then
+    if love.keyboard.isDown("down") and racket.y < (screenHeight - racket.height) then
       racket.y = racket.y + 2
     end
     
@@ -32,8 +32,26 @@ function love.update()
       racket.y = racket.y - 2
     end
     
-  ball.x = ball.x + ball.speed_x
-  ball.y = ball.y + ball.speed_y
+  -- move the ball at the beginning of the game
+    ball.x = ball.x + ball.speed_x
+    ball.y = ball.y - ball.speed_y
+    
+  -- bounces of the ball on walls
+    if ball.x > (screenWidth - ball.width) then
+      ball.speed_x = ball.speed_x * (-1) -- reverse the speed
+    end
+    
+    if ball.x < 0 then
+      ball.speed_x = ball.speed_x * (-1)
+    end
+    
+    if ball.y > (screenHeight - ball.height) then
+      ball.speed_y = ball.speed_y * (-1)
+    end
+    
+    if ball.y < 0 then
+      ball.speed_y = ball.speed_y * (-1)
+    end
   
 end
 
