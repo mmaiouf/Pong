@@ -19,8 +19,10 @@ ball.x = screenWidth / 2
 ball.y = screenHeight / 2
 ball.width = 20
 ball.height = 20
-ball.speed_x = 2
-ball.speed_y = -2
+ball.speed_x = 1
+ball.speed_y = -1
+
+trailList = {} -- a list that will contains the previous coordinates of the ball, for the trail
 
 function centerBall()
   ball.x = screenWidth / 2 - (ball.width/2)
@@ -39,8 +41,8 @@ function love.load()
 end
 
 -- All the logic's game, 60 times per second
-function love.update()
-  
+function love.update(dt) -- the time that has elapsed since the last update, since the last refresh, which updates according to the hertz number of the screen
+
   -- controls management for racket 1
     if love.keyboard.isDown("s") and racket.y < (screenHeight - racket.height) then
       racket.y = racket.y + 2
@@ -102,13 +104,44 @@ function love.update()
       ball.speed_y = ball.speed_y * (-1)
       racket.score = racket.score + 1
     end
+    
+  -- Trail Behavior  
+  -- we memorize the previous coordinates of the ball and insert them in a list
+    trail = {}
+    trail.x = ball.x
+    trail.y = ball.y
+    trail.life = 0.5
+    table.insert(trailList, trail)
+    
+    -- we delete the last square each update
+    for i = #trailList,1,-1 do
+      local t = trailList[i]
+      t.life = t.life - dt -- it is thanks to this "dt" that we going to access to the previous coordinates
+      if t.life <= 0 then
+        table.remove(trailList, i)
+      end
+    end
 end
 
 -- To draw all the game, 60 times per second
 function love.draw()
+  
+  -- Draw of rackets
   love.graphics.rectangle("fill", racket.x, racket.y, racket.width, racket.height)
-  love.graphics.rectangle("fill", ball.x, ball.y, ball.width, ball.height)
   love.graphics.rectangle("fill", racket2.x, racket2.y, racket2.width, racket2.height)
+  
+  -- Draw of the trail
+  for i=1,#trailList do
+    love.graphics.setColor(1,1,1,trailList[i].life / 2) -- color white, opacity that will decrease with the life
+    love.graphics.rectangle("fill", trailList[i].x, trailList[i].y, ball.width, ball.height)
+  end
+  
+  -- Draw of the ball
+  love.graphics.setColor(1,1,1,1)
+  love.graphics.rectangle("fill", ball.x, ball.y, ball.width, ball.height)
+  
+  -- Draw of scores
   love.graphics.print(racket.score, 200, 50, 0, 2, 2)
   love.graphics.print(racket2.score, 600, 50, 0, 2, 2)
+
 end
